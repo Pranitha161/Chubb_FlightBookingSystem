@@ -39,8 +39,8 @@ public class PassengerService {
 	public ResponseEntity<?> savePassenger(Passenger passenger){
 		Map<String,String> response=new HashMap<>();
 		Passenger passengers = passengerRepo.findByEmail(passenger.getEmail());
-			if(passengers==null){
-			response.put("message","Passenger already present with the id "+passengers.getId());
+			if(passengers!=null){
+			response.put("message","Passenger already present ");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}else{
 			passengerRepo.save(passenger);

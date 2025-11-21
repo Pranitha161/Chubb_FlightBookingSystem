@@ -6,7 +6,7 @@ import com.flightapp.entity.Price;
 import com.flightapp.entity.SearchRequest;
 import com.flightapp.repository.AirLineRepository;
 import com.flightapp.repository.FlightRepository;
-import com.flightapp.service.FlightService;
+
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,22 +38,15 @@ class FlightServiceTest {
 
     @Test
     void shouldSearchFlightsByFromToAndDate() {
-        // Given
         SearchRequest request = new SearchRequest();
         request.setFromPlace("Delhi");
         request.setToPlace("Mumbai");
         request.setDate(LocalDate.of(2025, 12, 25));
-
         Flight matchingFlight = createFlight(1, "Delhi", "Mumbai", LocalDateTime.of(2025, 12, 25, 10, 0));
         Flight wrongDateFlight = createFlight(2, "Delhi", "Mumbai", LocalDateTime.of(2025, 12, 26, 10, 0));
-
         when(flightRepo.getFlightByFromPlaceAndToPlace("Delhi", "Mumbai"))
                 .thenReturn(Arrays.asList(matchingFlight, wrongDateFlight));
-
-        // When
         List<Flight> result = flightService.search(request);
-
-        // Then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(1);
     }
@@ -88,7 +81,6 @@ class FlightServiceTest {
 
     @Test
     void shouldAddFlightSuccessfullyWhenAirlineExists() throws Exception {
-        // Given
         Airline existingAirline = new Airline();
         setPrivateId(Airline.class, existingAirline, 5);
         existingAirline.setName("IndiGo");
@@ -103,8 +95,6 @@ class FlightServiceTest {
             setPrivateId(Flight.class, f, 101); // simulate generated ID
             return f;
         });
-
-        // When
         ResponseEntity<Map<String, String>> response = flightService.addFlight(inputFlight);
 
         // Then
@@ -131,8 +121,6 @@ class FlightServiceTest {
         assertThat(response.getBody().get("message")).isEqualTo("No airline present to add the flight");
         verify(flightRepo, never()).save(any());
     }
-
-    // Helper methods
     private Flight createFlight(Integer id, String from, String to, LocalDateTime departure) {
         Flight f = new Flight();
         if (id != null) setPrivateId(Flight.class, f, id);
@@ -154,8 +142,6 @@ class FlightServiceTest {
 
         return f;
     }
-
-    // Reflection helper to set primitive int id (since it's not Integer)
     private void setPrivateId(Class<?> clazz, Object entity, int id) {
         try {
             var field = clazz.getDeclaredField("id");

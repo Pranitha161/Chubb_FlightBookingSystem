@@ -17,7 +17,7 @@ import com.flightapp.entity.Seat;
 import com.flightapp.entity.enums.TripType;
 import com.flightapp.repository.BookingRepository;
 import com.flightapp.repository.FlightRepository;
-import com.flightapp.repository.PassengerRepository;
+
 
 import jakarta.transaction.Transactional;
 @Service
@@ -28,10 +28,10 @@ public class BookingService {
 	@Autowired
 	private FlightRepository flightRepo;
 	@Transactional
-	public ResponseEntity<?> addticket(int flightId,Booking booking) {
+	public ResponseEntity<Map<String,String>> addticket(int flightId,Booking booking) {
 		Map<String,String> message=new HashMap<>();
 		
-		return (ResponseEntity<?>) flightRepo.findById(flightId).map(flight->{
+		return (ResponseEntity<Map<String,String>>) flightRepo.findById(flightId).map(flight->{
 			List<String> requestSeats=booking.getSeatNumbers();
 			List<Seat> flightSeats=flight.getSeats();
 			for(String seatNum:requestSeats) {
@@ -66,11 +66,11 @@ public class BookingService {
 			
 		}).orElseGet(()->{
 						message.put("message", "FlightId not found to book ticket");
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+						return (ResponseEntity<Map<String,String>>) ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
 				});
 	
 	}
-	public ResponseEntity<?> getTicketsByPnr(String pnr) {
+	public ResponseEntity<Object> getTicketsByPnr(String pnr) {
 	    Map<String, String> response = new HashMap<>();
 
 	    Optional<Booking> bookingOpt = bookingRepo.findByPnr(pnr);
@@ -83,7 +83,7 @@ public class BookingService {
 	    }
 	}
 
-	public ResponseEntity<?> getBookingsByemailId(String emailId){
+	public ResponseEntity<Object> getBookingsByemailId(String emailId){
 		 Map<String, String> response = new HashMap<>();
 		if(bookingRepo.findByEmail(emailId).isEmpty()) {
 			response.put("message", "No booking with the element email"+emailId);
@@ -94,7 +94,7 @@ public class BookingService {
 					
 		}
 	}
-	public ResponseEntity<?> deleteBooking(String pnr) {
+	public ResponseEntity<Map<String,String>> deleteBooking(String pnr) {
 		Map<String, String> response = new HashMap<>();
 		Optional<Booking> booking=bookingRepo.findByPnr(pnr);
 		if(booking.isEmpty()) {

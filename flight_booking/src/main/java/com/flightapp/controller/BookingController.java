@@ -28,25 +28,25 @@ public class BookingController {
 	@Autowired
 	private PassengerService passengerService;
 	@PostMapping("booking/{flightId}")
-	public ResponseEntity<?> bookTicket(@RequestBody Booking booking,@PathVariable Integer flightId) {
+	public ResponseEntity<Map<String,String>> bookTicket(@RequestBody Booking booking,@PathVariable Integer flightId) {
 		Map<String, String> response = new HashMap<>();
 		ResponseEntity<?> pass=passengerService.getPassengerByEmail(booking.getEmail());
 		if(pass.getStatusCode()==HttpStatus.BAD_REQUEST) {
 			response.put("message", "Not a valid passenger to book the ticket");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
-		return bookingService.addticket(flightId,booking);
+		return (ResponseEntity<Map<String,String>>) bookingService.addticket(flightId, booking);
 	}
 	@GetMapping("ticket/{pnr}")
-	public ResponseEntity<?> getByPnr(@PathVariable String pnr){
+	public ResponseEntity<Object> getByPnr(@PathVariable String pnr){
 		return bookingService.getTicketsByPnr(pnr);
 	}
 	@GetMapping("/history/{emailId}")
-	public ResponseEntity<?> getByemailId(@PathVariable String emailId){
+	public ResponseEntity<Object> getByemailId(@PathVariable String emailId){
 		return bookingService.getBookingsByemailId(emailId);
 	}
 	@DeleteMapping("/booking/cancel/{pnr}")
-	public ResponseEntity<?> cancelBooking(@PathVariable String pnr) {
+	public ResponseEntity<Map<String,String>> cancelBooking(@PathVariable String pnr) {
 		return bookingService.deleteBooking(pnr);
 	}
 }
